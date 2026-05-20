@@ -1,0 +1,75 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  color: #222;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+}
+
+.search-box {
+  display: flex;
+  gap: 10px;
+  margin: 30px 0;
+}
+
+input {
+  flex: 1;
+  padding: 12px;
+  font-size: 16px;
+}
+
+button {
+  padding: 12px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#status {
+  text-align: center;
+  font-weight: bold;
+}
+
+.results {
+  display: grid;
+  gap: 16px;
+}
+
+.station-card {
+  background: white;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.station-card h2 {
+  margin-top: 0;
+}
+
+.prices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.price {
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+
+.price.available {
+  background: #eef3ff;
+}
+
+.price.missing {
+  background: #fee2e2;
+}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prix des carburants</title>
+  <link rel="stylesheet" href="index.css" />
+</head>
+<body>
+  <main class="container">
+    <h1>Prix des carburants</h1>
+
+    <form id="searchForm" class="search-box">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Entrez un code postal ou une ville"
+        required
+      />
+      <button type="submit">Rechercher</button>
+    </form>
+
+    <p id="status"></p>
+    <section id="results" class="results"></section>
+  </main>
+
+  <script src="index.js"></script>
+</body>
+</html>
