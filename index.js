@@ -3,7 +3,7 @@ const API_URL =
 
 const form = document.getElementById("searchForm");
 const input = document.getElementById("searchInput");
-const statusText = document.getElementById("status");
+const suggestions = document.getElementById("suggestions"); 
 const results = document.getElementById("results");
 
 form.addEventListener("submit", async (event) => {
@@ -12,8 +12,8 @@ form.addEventListener("submit", async (event) => {
   const searchValue = input.value.trim();
   if (!searchValue) return;
 
+  suggestions.innerHTML = "";
   results.innerHTML = "";
-  statusText.textContent = "Recherche en cours...";
 
   try {
     const stations = await fetchStations(searchValue);
@@ -24,9 +24,80 @@ form.addEventListener("submit", async (event) => {
   }
 });
 
+input.addEventListener("input", async () => {
+  const value = input.value.trim();
+
+  if (value.length < 3 && /^\d+$/.test(value) || value === "") {
+    suggestions.classList.add("hidden");
+    suggestions.innerHTML = "";
+    return;
+  }
+
+  try {
+    const cities = await searchCities(value);
+
+    if (cities.length === 0) {
+      suggestions.classList.remove("hidden");
+      suggestions.innerHTML = `
+        <div class="suggestion-item">
+          Aucun résultat
+        </div>
+      `;
+      return;
+    }
+
+    suggestions.classList.remove("hidden");
+
+    suggestions.innerHTML = cities
+      .map(city => `
+        <div 
+          class="suggestion-item" 
+          data-city="${city.nom}"
+          data-postcode="${city.codesPostaux[0]}"
+        >
+          ${city.nom} (${city.codesPostaux.join(", ")})
+        </div>
+      `)
+      .join("");
+
+  } catch (error) {
+    console.error(error);
+    suggestions.classList.add("hidden");
+    suggestions.innerHTML = "";
+  }
+});
+
+suggestions.addEventListener("click", (event) => {
+  const item = event.target.closest(".suggestion-item");
+
+  if (!item || !item.dataset.city) return;
+
+  input.value = item.dataset.city;
+
+  suggestions.classList.add("hidden");
+  suggestions.innerHTML = "";
+});
+
+async function searchCities(query) {
+  const isPostalCode = /^\d+$/.test(query);
+
+  const url = isPostalCode
+    ? `https://geo.api.gouv.fr/communes?codePostal=${encodeURIComponent(query)}&fields=nom,codesPostaux,centre,population&boost=population&limit=5`
+    : `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(query)}&fields=nom,codesPostaux,centre,population&boost=population&limit=5`;
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error("Erreur API communes");
+  }
+
+  return await response.json();
+}
+
 async function fetchStations(searchValue) {
   const isPostalCode = /^\d{5}$/.test(searchValue);
 
+  suggestions.classList.add("hidden");
   const where = isPostalCode
     ? `cp="${searchValue}"`
     : `ville="${searchValue}"`;
@@ -40,18 +111,11 @@ async function fetchStations(searchValue) {
     throw new Error("Erreur API");
   }
 
-    console.log("Ok",response);
   const data = await response.json();
   return data.results || [];
 }
 
 function displayStations(stations) {
-  if (stations.length === 0) {
-    statusText.textContent = "Aucune station trouvée.";
-    return;
-  }
-
-  statusText.textContent = `${stations.length} station(s) trouvée(s).`;
 
   results.innerHTML = stations
     .map((station) => createStationCard(station))
@@ -70,7 +134,7 @@ function createStationCard(station) {
 
   const pricesHtml = prices
     .map(([fuel, price]) => `
-      <span class="price ${price ? "available" : "missing"}">${fuel} : <b>${price ? price +" €/L" : "-"}</b> </span>
+     <span class="price ${price ? "available" : "missing"}" id="${fuel}">${fuel} : <b>${price ? price +" €/L" : "-"}</b> </span>
     `)
     .join("");
 

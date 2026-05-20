@@ -18,7 +18,46 @@ h1 {
 .search-box {
   display: flex;
   gap: 10px;
-  margin: 30px 0;
+  align-items: flex-start;
+}
+.search-bar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+#suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+
+  width: 100%;
+
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+
+  margin-top: 4px;
+
+  overflow: hidden;
+  z-index: 1000;
+
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.suggestion-item {
+  padding: 10px;
+  cursor: pointer;
+  color: #222;
+}
+
+.suggestion-item:hover {
+  background: #f3f4f6;
+}
+
+.hidden{
+    display: none;
 }
 
 input {
